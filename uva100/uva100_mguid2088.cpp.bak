@@ -1,0 +1,69 @@
+#include <cstdio>
+#include <unistd.h>
+#include <cstdint>
+#include <chrono>
+
+uint32_t seen[10000];
+
+uint32_t cycle_count(uint32_t n) {
+  if (n <= 9999) {
+    if(seen[n] != 0) {
+      return seen[n];
+    }
+  }
+  if(n == 0) {
+    return 0;
+  } else if(n%2 == 0) {
+    return 1 + cycle_count(n / 2);
+  } else {
+    return 2 + cycle_count(((n*3)+1)/2);
+  }
+  return 0;
+}
+
+int main() {
+  auto begin = std::chrono::high_resolution_clock::now();
+  uint32_t i;
+  uint32_t j;
+  uint32_t max;
+  uint32_t tmp_max;
+  seen[1] = 1;
+
+  char buf[4096];
+  char *pos = buf;
+
+  while(scanf("%u", &i) != EOF) {
+    scanf("%u", &j);
+    bool swap = false;
+    if(j<i) {
+      i = i^j;
+      j = i^j;
+      i = j^i;
+      swap = true;
+    }
+    max = cycle_count(i);
+    if(i <= 9999) seen[i] = max;
+    uint32_t k;
+    for(k = i + 1; k <= j; k++) {
+      if(k > 9999){
+        tmp_max = cycle_count(k);
+      } else if(seen[k] != 0){
+        tmp_max = seen[k];
+      } else {
+        tmp_max = cycle_count(k);
+        seen[k] = tmp_max;
+      }
+      if(tmp_max > max) max = tmp_max;
+    }
+    if(swap) {
+      pos += sprintf(pos, "%u %u %u\n", j, i, max);
+    } else {
+      pos += sprintf(pos, "%u %u %u\n", i, j, max);
+    }
+  }
+  write(1, buf, pos-buf);
+  auto end = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end-begin).count();
+  printf("%f\n", duration/1E9);
+  return 0;
+}
