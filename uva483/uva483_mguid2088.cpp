@@ -1,27 +1,30 @@
-#include <string>
 #include <iostream>
+#include <algorithm>
+#include <sstream>
+#include <unistd.h>
 
-int main() {
+int main () {
+  std::string word;
   std::string line;
-  std::ios_base::sync_with_stdio(false);
-  while (std::getline(std::cin, line)) {
-    int line_length = line.size();
-    int cur;
-    std::string sub;
-    for (int i = 0; i < line_length; i++) {
-      cur = 0;
-      if (line[i] != ' ') {
-        while (line[i + cur] != ' ' && i + cur < line_length) {
-          cur++;
-        }
-        for (int j = (i + cur) - 1; i <= j && j < line_length; j--) {
-          std::cout << line[j];
-        }
-        i += cur - 1;
-      } else {
-        std::cout << line[i];
+  std::getline(std::cin, line);
+  std::cout << line << '\n';
+  while(!std::cin.eof()) {
+    std::stringstream ss(line);
+    ss >> word;
+    bool first = true;
+    while(!ss.eof()) {
+      if(!first) {
+        std::cout << ' ';
       }
+      std::reverse(word.begin(), word.end());
+      std::cout << word;
+      ss >> word;
+      first = false;
     }
+    std::cout << '\b';
     std::cout << '\n';
+    std::getline(std::cin, line);
+    std::cout << line << '\n';
+    usleep(5000);
   }
 }
