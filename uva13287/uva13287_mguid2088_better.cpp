@@ -8,38 +8,37 @@
 #include <cstdio>
 
 int main() {
-  int x, y, total, width, count, input;
-
+  int x, y, i, total, width=0, count=0, input;
   char c;
   char buf[1024];
   char * pos = buf;
 
-  while(scanf(" %d ", &width) != EOF) {
+  char line[16];
+  while(true) {
+    count = width = 0;
+    while((c = getchar_unlocked()) >= '0') {
+      width = (width * 10) + (c & 0xF);
+    }
+    if(width == 0) break;
     total = 0;
-    count = getchar_unlocked() - '0';
-    c = getchar_unlocked(); //danger, assuming the next character is correctly formatted
-
-    while('0' <= c) { //unsafe ignore upper bound
-      count = (count * 10) + c - '0';
-      c = getchar_unlocked();
+    while((c = getchar_unlocked()) >= '0') {
+      count = (count * 10) + (c & 0xF);
     }
     while(count--) {
-      x = y = 0;
-      x = getchar_unlocked() - '0';
-      c = getchar_unlocked(); //danger, assuming the next character is correct formatted
-      while('0' <= c) {
-        x = (x * 10) + c - '0';
-        c = getchar_unlocked();
+      fgets_unlocked(line, 16, stdin);
+      x = y = i = 0;
+      for(;;i++) {
+        if(line[i] == ' ') break;
+        x = (x * 10) + (line[i] & 0xF);
       }
-      y = getchar_unlocked() - '0';
-      c = getchar_unlocked(); //danger, assuming the next character is correct formatted
-      while('0' <= c) { //unsafe ignore upper bound
-        y = (y * 10) + c - '0';
-        c = getchar_unlocked();
+      i++;
+      for(;;i++) {
+        if(line[i] < '0') break;
+        y = (y * 10) + (line[i] & 0xF);
       }
       total += x * y;
     }
     pos += sprintf(pos , "%d\n", total/width);
   }
-  fwrite(buf, 1, pos-buf, stdout);
+  fwrite_unlocked(buf, 1, pos-buf, stdout);
 }
