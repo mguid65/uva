@@ -18,7 +18,7 @@ int main() {
   while (true) {
     n = 0;
     while('0' <= c) {
-      n = (n << 3) + (n << 1) + (c - 48);
+      n = (n << 3) + (n << 1) + (c & 0xF);
       c = getchar();
     }
 
