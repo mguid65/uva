@@ -5,3 +5,4 @@ for line1 in sys.stdin:
     break
   for line2 in sys.stdin:
     print(int(line1) * int(line2))
+    break
