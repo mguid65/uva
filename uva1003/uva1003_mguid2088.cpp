@@ -41,7 +41,8 @@ public:
     }
   }
   bool find_gap() {
-    for(int i = 0; i < angles.size(); i++) {
+    int size = angles.size();
+    for(int i = 0; i < size; i++) {
       auto angle_pair = angles[i];
 
       double left = angle_pair.first;
@@ -124,7 +125,7 @@ void process_forest(int case_num, int x_min, int y_min, int x_max, int y_max, st
       f.add_fence(t.y - y_min, 1.5 * PI);
 
       for(int j = 0; j < trees.size(); j++) {
-        if( j == i || std::find(remaining_trees.begin(), remaining_trees.end(), i) == remaining_trees.end()) continue;
+        if( j == i || std::find(remaining_trees.begin(), remaining_trees.end(), j) == remaining_trees.end()) continue;
         auto &t2 = trees[j];
 
         double dx = t2.x - t.x;
@@ -138,7 +139,7 @@ void process_forest(int case_num, int x_min, int y_min, int x_max, int y_max, st
             angle = atan2(-dx, dy) + 0.5 * PI;
           }
         } else {
-          if ( dx < 1 ) {
+          if ( dx < 0 ) {
             angle = atan2(-dy, -dx) + PI;
           } else {
             angle = atan2(dx, -dy) + 1.5 * PI;
