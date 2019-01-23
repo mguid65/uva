@@ -38,9 +38,9 @@ public:
     }
   }
   bool find_gap() {
-    int s = angles.size();
-    for(int i = 0; i < s; i++) {
-      auto& angle_pair = angles[i];
+    int size = angles.size();
+    for(int i = 0; i < size; i++) {
+      auto angle_pair = angles[i];
 
       double left = angle_pair.first;
       double right = angle_pair.second;
@@ -122,7 +122,7 @@ void process_forest(int case_num, int x_min, int y_min, int x_max, int y_max, co
       f.add_fence(t.y - y_min, 1.5 * PI);
 
       for(int j = 0; j < trees.size(); j++) {
-        if( j == i || remaining_trees[j] == 0) continue;
+        if( j == i || std::find(remaining_trees.begin(), remaining_trees.end(), j) == remaining_trees.end()) continue;
         auto &t2 = trees[j];
 
         double dx = t2.x - t.x;
