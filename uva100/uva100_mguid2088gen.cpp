@@ -21,9 +21,6 @@ int main() {
   uint32_t i, j, l, max, tmp_max;
   std::unordered_map<uint32_t, uint32_t>::iterator it;
 
-  for(uint32_t k = 0; k< 1000001; k++) {
-    l = 0;
-    
   char buf[4096];
   char *pos = buf;
   seen[1] = 1;
@@ -38,11 +35,6 @@ int main() {
       i = j^i;
       swap = true;
     }
-    end = std::chrono::high_resolution_clock::now();
-    dur = std::chrono::duration_cast<std::chrono::nanoseconds>(end-begin).count();
-    printf("swap time: %f\n", dur/1E9);
-
-    begin = std::chrono::high_resolution_clock::now();
     for(uint32_t k = i; k <= j; k++) {
       it = seen.find(k);
       if(it != seen.end()) {
@@ -54,9 +46,6 @@ int main() {
       }
       if(tmp_max > max) max = tmp_max;
     }
-    end = std::chrono::high_resolution_clock::now();
-    dur = std::chrono::duration_cast<std::chrono::nanoseconds>(end-begin).count();
-    printf("inner loop time: %f\n", dur/1E9);
 
     if(swap) {
       pos += sprintf(pos, "%u %u %u\n", j, i, max);
@@ -64,13 +53,7 @@ int main() {
       pos += sprintf(pos, "%u %u %u\n", i, j, max);
     }
   }
-
-  begin = std::chrono::high_resolution_clock::now();
   write(1, buf, pos-buf);
-  end = std::chrono::high_resolution_clock::now();
-  dur = std::chrono::duration_cast<std::chrono::nanoseconds>(end-begin).count();
-  printf("write time: %f\n", dur/1E9);
-  return 0;
 }
 
 
