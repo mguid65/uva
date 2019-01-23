@@ -1,27 +1,30 @@
 #include <cstdio>
 #include <vector>
+#include <iostream>
 #include <cmath>
 #include <algorithm>
 #include <numeric>
 
 //error value
-const double EPSILON = 1e-9;
-const double PI = 3.14159265358;
-const double HALF_PI = 0.5 * PI;
-const double TAO = 2.0 * PI;
+const double EPSILON = 1E-9;
+
+const double PI = 3.1415926535897932384626433832795;
 
 //a tree
 class tree {
 public:
   tree() { tree(0,0,0,0); }
-  tree(const int &x, const int &y, const int &d, const int &h) : x(x), y(y), d(d), h(h) {}
+  tree(int x, int y, int d, int h) : x(x), y(y), d(d), h(h) {}
   int x, y, d, h;
 };
 
 //generate the forest relative to a single tree and determine its obstacles
 class tree_relative_forest {
 public:
-  tree_relative_forest(const double &r1, const double &h1) : r1(r1), h1(h1), max_reach(sqrt((r1*r1)+(h1*h1))) {
+  tree_relative_forest(double r1, double h1) {
+    this->r1 = r1;
+    this->h1 = h1;
+    max_reach = sqrt((r1*r1)+(h1*h1));
   }
   //add the angles for a fence only if it falls within the fall range of this tree
   void add_fence(double distance, double offset) {
@@ -38,29 +41,30 @@ public:
     }
   }
   bool find_gap() {
-    for(int i = 0; i < angles.size(); i++) {
+    int size = angles.size();
+    for(int i = 0; i < size; i++) {
       auto angle_pair = angles[i];
 
       double left = angle_pair.first;
       double right = angle_pair.second;
 
       //try to wrap the angle to positive if negative
-      left = fmod(left, TAO);
-      if ( left < 0.0 ) {
-        left += TAO;
+      left = fmod(left, 2 * PI);
+      if ( left < 0 ) {
+        left += 2 * PI;
       }
-      right = fmod(right, TAO);
-      if ( right < 0.0 ) {
-        right += TAO;
+      right = fmod(right, 2 * PI);
+      if ( right < 0 ) {
+        right += 2 * PI;
       }
 
       //regular case, just add left and right angles
       if ( left <= right) {
         angles[i] = std::make_pair(left, right);
       } else { //right is greater than left
-        angles[i] = std::make_pair(left, TAO);
-        //alot of time is being spent in this emplace_back call
-        angles.emplace_back(0.0, right);
+        angles[i] = std::make_pair(left, 2 * PI);
+        angles.emplace_back(0, right);
+        //angles[i] = std::make_pair((2 * PI) - right, (2 * PI) - left);
       }
     }
     std::sort(angles.begin(), angles.end());
@@ -74,7 +78,7 @@ public:
         limit = angle_pair.second;
       }
     }
-    return limit + EPSILON < TAO;
+    return limit + EPSILON < 2 * PI;
   }
 private:
   double r1, h1;
@@ -105,8 +109,8 @@ inline void get_four_ints(int& a, int& b, int& c, int& d) {
 
 
 //determine the fallable trees for a given forest
-void process_forest(int case_num, int x_min, int y_min, int x_max, int y_max, const std::vector<tree> &trees) {
-  std::vector<int> remaining_trees(trees.size(), 1);
+void process_forest(int case_num, int x_min, int y_min, int x_max, int y_max, std::vector<tree> trees) {
+  std::vector<int> remaining_trees(trees.size());
   std::iota(remaining_trees.begin(), remaining_trees.end(), 0);
   while(remaining_trees.size()) {
     bool progress = false;
@@ -115,8 +119,8 @@ void process_forest(int case_num, int x_min, int y_min, int x_max, int y_max, co
       auto &t = trees[i];
 
       tree_relative_forest f(0.5 * t.d, t.h);
-      f.add_fence(x_max - t.x, 0.0);
-      f.add_fence(y_max - t.y, HALF_PI);
+      f.add_fence(x_max - t.x, 0);
+      f.add_fence(y_max - t.y, 0.5 * PI);
       f.add_fence(t.x - x_min, PI);
       f.add_fence(t.y - y_min, 1.5 * PI);
 
@@ -128,11 +132,11 @@ void process_forest(int case_num, int x_min, int y_min, int x_max, int y_max, co
         double dy = t2.y - t.y;
         double angle;
 
-        if( dy ) {
-          if( dx ) {
+        if( dy > 0 ) {
+          if( dx > 0 ) {
             angle = atan2(dy, dx);
           } else {
-            angle = atan2(-dx, dy) + HALF_PI;
+            angle = atan2(-dx, dy) + 0.5 * PI;
           }
         } else {
           if ( dx < 0 ) {
@@ -141,11 +145,11 @@ void process_forest(int case_num, int x_min, int y_min, int x_max, int y_max, co
             angle = atan2(dx, -dy) + 1.5 * PI;
           }
         }
+
         f.add_tree(sqrt((dx * dx) + (dy * dy)), 0.5 * t2.d, angle);
       }
       if(f.find_gap()) {
         remaining_trees.erase(std::find(remaining_trees.begin(), remaining_trees.end(), i));
-        //remaining_trees[i] = 0;
         progress = true;
       }
     }
@@ -157,21 +161,18 @@ void process_forest(int case_num, int x_min, int y_min, int x_max, int y_max, co
 int main() {
   int x_min = 0, y_min = 0, x_max = 0, y_max = 0, num_trees = 0, tree_x, tree_y, tree_d, tree_h;
   get_five_ints(x_min, y_min, x_max, y_max, num_trees);
-  //scanf(" %d %d %d %d %d ", &x_min, &y_min, &x_max, &y_max, &num_trees);
   int case_num = 1;
   while(num_trees != 0) {
     std::vector<tree> trees;
     while(num_trees--) {
       tree_x = tree_y = tree_d = tree_h = 0;
       get_four_ints(tree_x, tree_y, tree_d, tree_h);
-      //scanf(" %d %d %d %d ", &tree_x, &tree_y, &tree_d, &tree_h);
-      trees.emplace_back(tree_x, tree_y, tree_d, tree_h);
+      trees.push_back(tree{tree_x, tree_y, tree_d, tree_h});
     }
+
     process_forest(case_num, x_min, y_min, x_max, y_max, trees);
     case_num++;
     x_min = y_min = x_max = y_max = num_trees = 0;
     get_five_ints(x_min, y_min, x_max, y_max, num_trees);
-    //scanf(" %d %d %d %d %d ", &x_min, &y_min, &x_max, &y_max, &num_trees);
   }
 }
-
