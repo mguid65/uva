@@ -9,8 +9,8 @@
 typedef std::array<float, 2> stopper;
 
 const float PI = 3.14159265358979;
-//const float EPSILON = 1E-9;
-const float EPSILON = 0.0;
+const float EPSILON = 1E-9;
+//const float EPSILON = 0.0;
 struct grid_point {
   grid_point(float x = 0.0, float y = 0.0) : x(x), y(y) {}
   float x, y;
@@ -38,6 +38,7 @@ int main() {
               &stopper_list[0][0], &stopper_list[0][1],
               &stopper_list[1][0], &stopper_list[1][1],
               &stopper_list[2][0], &stopper_list[2][1]) && triangle[0] != 0) {
+    if(count != 1) puts("");
     //SORT THE TRIANGLE SIDE LENGTHS
     std::sort(triangle.begin(), triangle.end());
     //GET THE ANGLES OF THE TRIANGLE
@@ -107,7 +108,7 @@ int main() {
       tmp_lhs = sqrt(pow(b.x - a.x,2.0) + pow(b.y - a.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][0]][tmp_index_1]/2.0 + stopper_list[possibilities[i][1]][tmp_index_2]/2.0;
 //      printf("SIDE 1 a - b distance %f %f\n", tmp_lhs, tmp_rhs);
-      if(tmp_lhs <= (tmp_rhs + EPSILON)) {
+      if(tmp_lhs < (tmp_rhs + EPSILON)) {
         continue;
       }
       tmp_index_1 = tmp_index_2 = 1;
@@ -116,7 +117,7 @@ int main() {
       tmp_lhs = sqrt(pow(c.x - b.x,2.0) + pow(c.y - b.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][1]][tmp_index_1]/2.0 + stopper_list[possibilities[i][2]][tmp_index_2]/2.0;
 //      printf("SIDE 1 b - c distance %f %f\n", tmp_lhs, tmp_rhs);
-      if(tmp_lhs <= (tmp_rhs + EPSILON)) {
+      if(tmp_lhs < (tmp_rhs + EPSILON)) {
         continue;
       }
       tmp_index_1 = tmp_index_2 = 1;
@@ -125,7 +126,7 @@ int main() {
       tmp_lhs = sqrt(pow(a.x - c.x,2.0) + pow(a.y - c.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][2]][tmp_index_1]/2.0 + stopper_list[possibilities[i][0]][tmp_index_2]/2.0;
 //      printf("SIDE 1 c - a distance %f %f\n", tmp_lhs, tmp_rhs);
-      if(tmp_lhs <= (tmp_rhs + EPSILON)) {
+      if(tmp_lhs < (tmp_rhs + EPSILON)) {
         continue;
       }
       tmp_index_1 = tmp_index_2 = 0;
@@ -136,7 +137,7 @@ int main() {
       tmp_lhs = sqrt(pow(b.x - a.x,2.0) + pow(b.y - a.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][0]][tmp_index_1]/2.0 + stopper_list[possibilities[i][1]][tmp_index_2]/2.0;
 //      printf("SIDE 2 a - b distance %f %f\n", tmp_lhs, tmp_rhs);
-      if(tmp_lhs <= (tmp_rhs + EPSILON)) {
+      if(tmp_lhs < (tmp_rhs + EPSILON)) {
         continue;
       }
       tmp_index_1 = tmp_index_2 = 0;
@@ -145,7 +146,7 @@ int main() {
       tmp_lhs = sqrt(pow(c.x - b.x,2.0) + pow(c.y - b.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][1]][tmp_index_1]/2.0 + stopper_list[possibilities[i][2]][tmp_index_2]/2.0;
 //      printf("SIDE 2 b - c distance %f %f\n", tmp_lhs, tmp_rhs);
-      if(tmp_lhs <= (tmp_rhs + EPSILON)) {
+      if(tmp_lhs < (tmp_rhs + EPSILON)) {
         continue;
       }
       tmp_index_1 = tmp_index_2 = 0;
@@ -154,7 +155,7 @@ int main() {
       tmp_lhs = sqrt(pow(a.x - c.x,2.0) + pow(a.y - c.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][2]][tmp_index_1]/2.0 + stopper_list[possibilities[i][0]][tmp_index_2]/2.0;
 //      printf("SIDE 2 c - a distance %f %f\n", tmp_lhs, tmp_rhs);
-      if(tmp_lhs <= (tmp_rhs + EPSILON)) {
+      if(tmp_lhs < (tmp_rhs + EPSILON)) {
         continue;
       }
       good = true;
@@ -162,8 +163,8 @@ int main() {
     }
     printf("Triangle number %d:\n", count);
     count++;
-    if(good) puts("All three stoppers will fit in the triangular space\n");
-    else puts("Stoppers will not fit in the triangular space\n");
+    if(good) puts("All three stoppers will fit in the triangular space");
+    else puts("Stoppers will not fit in the triangular space");
   }
 }
 
