@@ -38,7 +38,9 @@ int main() {
               &stopper_list[0][0], &stopper_list[0][1],
               &stopper_list[1][0], &stopper_list[1][1],
               &stopper_list[2][0], &stopper_list[2][1]) && triangle[0] != 0) {
+    //SORT THE TRIANGLE SIDE LENGTHS
     std::sort(triangle.begin(), triangle.end());
+    //GET THE ANGLES OF THE TRIANGLE
     if(triangle[0] == triangle[1] && triangle[1] == triangle[2]) {
       angles[0] = angles[1] = angles[2] = 60.0; //equilateral triangle, angles always 60
     } else {
@@ -48,6 +50,7 @@ int main() {
       angles[2] = 180.0 - (angles[0] + angles[1]); //subtraction for last angle
       std::sort(angles.begin(), angles.end());     //sort them
     }
+    //CALCULATE CARTESIAN POINTS FOR TRIANGLE
     vertices[0].x = 0; //vertices for 0 points always 0
     vertices[0].y = 0; //vertices for 0 points always 0
     vertices[1].x = triangle[2]; //vertices for second point made up of (triangle2, 0)
@@ -56,6 +59,8 @@ int main() {
     vertices[2].y = sin(angles[0] * PI/180.0) * triangle[1]; // have to calculate last point, it may not touch an axis
 //    printf("(%f, %f) (%f, %f) (%f, %f)\n", vertices[0].x, vertices[0].y, vertices[1].x, vertices[1].y, vertices[2].x, vertices[2].y);
 
+    //PICK A STOPPER TO FLIP
+    //IF ALL SAME SIZE LARGE SIDE THEN PICK MIN OF SMALL SIDE, OTHERWISE PICK MAX OF LARGE SIDE
     if(stopper_list[0][1] == stopper_list[1][1] && stopper_list[1][1] == stopper_list[2][1]) {
       size_t index = std::distance(stopper_list.begin(), std::min_element(stopper_list.begin(), stopper_list.end(), [] (const stopper& a, const stopper& b) {
         return a[0] < b[0];
@@ -69,6 +74,7 @@ int main() {
     }
 
     bool good = false;
+    // LOOP THROUGH THE PERMUTATIONS
     for(int i = 0; i < 6; i++) {
       grid_point a, b, c;
       //GET CENTER POINTS FOR THIS COMBINATION OF CIRCLES PLACED IN THEIR RESPECTIVE CORNERS
@@ -95,7 +101,7 @@ int main() {
       float tmp_lhs, tmp_rhs;
 
       printf("CASE %d\n", i);
-
+      //CHECK COLLISION BY DISTANCE FORMULA FOR ALL LARGE SIDES
       tmp_lhs = sqrt(pow(b.x - a.x,2.0) + pow(b.y - a.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][0]][1]/2.0 + stopper_list[possibilities[i][1]][1]/2.0;
       printf("SIDE 1 a - b distance %f %f\n", tmp_lhs, tmp_rhs);
@@ -114,6 +120,7 @@ int main() {
       if(tmp_lhs <= (tmp_rhs + EPSILON)) {
         continue;
       }
+      //MAYBE UNECESSARY, BUT UNTIL IT WORKS, CHECK COLLISION ON THE OTHER SIDE TOO
       tmp_lhs = sqrt(pow(b.x - a.x,2.0) + pow(b.y - a.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][0]][0]/2.0 + stopper_list[possibilities[i][1]][0]/2.0;
       printf("SIDE 2 a - b distance %f %f\n", tmp_lhs, tmp_rhs);
