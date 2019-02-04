@@ -62,7 +62,7 @@ int main() {
 
     //PICK A STOPPER TO FLIP
     //IF ALL SAME SIZE LARGE SIDE THEN PICK MIN OF SMALL SIDE, OTHERWISE PICK MAX OF LARGE SIDE
-    size_t index = 0;
+    size_t index;
     if(stopper_list[0][1] == stopper_list[1][1] && stopper_list[1][1] == stopper_list[2][1]) {
       index = std::distance(stopper_list.begin(), std::min_element(stopper_list.begin(), stopper_list.end(), [] (const stopper& a, const stopper& b) {
         return a[0] < b[0];
@@ -72,10 +72,22 @@ int main() {
         return a[1] < b[1];
       }));
     }
-    std::swap(stopper_list[0], stopper_list[index]);
+    std::swap(stopper_list[index], stopper_list[0]);
 
-    bool good = false;
     // LOOP THROUGH THE PERMUTATIONS
+    bool possible = true;
+    bool good = false;
+    double tri_perim = (triangle[0] + triangle[1] + triangle[2]);
+    double tri_perim_over_2 = tri_perim/2.0;
+    double tri_area = sqrt(tri_perim_over_2 * (tri_perim_over_2 - triangle[0]) * (tri_perim_over_2 - triangle[1]) * (tri_perim_over_2 - triangle[2]));
+    double max_rad = (2.0 * tri_area) / tri_perim;
+    for(int j = 0; j < 3; j++) {
+      if((stopper_list[j][1]/2.0) > max_rad) {
+        possible = false;
+        break;
+      }
+    }
+    if (possible) {
     for(int i = 0; i < 6; i++) {
       grid_point a, b, c;
       //GET CENTER POINTS FOR THIS COMBINATION OF CIRCLES PLACED IN THEIR RESPECTIVE CORNERS
@@ -102,64 +114,59 @@ int main() {
       float tmp_lhs, tmp_rhs;
 
       //CHECK COLLISION BY DISTANCE FORMULA FOR ALL LARGE SIDES
-      size_t tmp_index_1 = 1, tmp_index_2 = 1;
-      if(possibilities[i][0] == 0) {tmp_index_1 = 0;}
-      else if(possibilities[i][1] == 0) {tmp_index_2 = 0;}
+      int tmp_index_1, tmp_index_2;
+      tmp_index_1 = tmp_index_2 = 1;
+      if(possibilities[i][0] == 0) tmp_index_1 = 0;
+      else if(possibilities[i][1] == 0) tmp_index_2 = 0;
       tmp_lhs = sqrt(pow(b.x - a.x,2.0) + pow(b.y - a.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][0]][tmp_index_1]/2.0 + stopper_list[possibilities[i][1]][tmp_index_2]/2.0;
 //      printf("SIDE 1 a - b distance %f %f\n", tmp_lhs, tmp_rhs);
-      if(tmp_lhs < (tmp_rhs + EPSILON)) {
+      if(tmp_lhs <= (tmp_rhs + EPSILON)) {
         continue;
       }
       tmp_index_1 = tmp_index_2 = 1;
-      if(possibilities[i][1] == 0) {tmp_index_1 = 0;}
-      else if(possibilities[i][2] == 0) {tmp_index_2 = 0;}
+      if(possibilities[i][1] == 0) tmp_index_1 = 0;
+      else if(possibilities[i][2] == 0) tmp_index_2 = 0;
       tmp_lhs = sqrt(pow(c.x - b.x,2.0) + pow(c.y - b.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][1]][tmp_index_1]/2.0 + stopper_list[possibilities[i][2]][tmp_index_2]/2.0;
-//      printf("SIDE 1 b - c distance %f %f\n", tmp_lhs, tmp_rhs);
-      if(tmp_lhs < (tmp_rhs + EPSILON)) {
+      if(tmp_lhs <= (tmp_rhs + EPSILON)) {
         continue;
       }
       tmp_index_1 = tmp_index_2 = 1;
-      if(possibilities[i][2] == 0) {tmp_index_1 = 0;}
-      else if(possibilities[i][0] == 0) {tmp_index_2 = 0;}
+      if(possibilities[i][2] == 0) tmp_index_1 = 0;
+      else if(possibilities[i][0] == 0) tmp_index_2 = 0;
       tmp_lhs = sqrt(pow(a.x - c.x,2.0) + pow(a.y - c.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][2]][tmp_index_1]/2.0 + stopper_list[possibilities[i][0]][tmp_index_2]/2.0;
-//      printf("SIDE 1 c - a distance %f %f\n", tmp_lhs, tmp_rhs);
-      if(tmp_lhs < (tmp_rhs + EPSILON)) {
+      if(tmp_lhs <= (tmp_rhs + EPSILON)) {
         continue;
       }
       tmp_index_1 = tmp_index_2 = 0;
-      if(possibilities[i][0] == 0) {tmp_index_1 = 1;}
-      else if(possibilities[i][1] == 0) {tmp_index_2 = 1;}
-
-      //MAYBE UNECESSARY, BUT UNTIL IT WORKS, CHECK COLLISION ON THE OTHER SIDE TOO
+      if(possibilities[i][0] == 0) tmp_index_1 = 1;
+      else if(possibilities[i][1] == 0) tmp_index_2 = 1;
       tmp_lhs = sqrt(pow(b.x - a.x,2.0) + pow(b.y - a.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][0]][tmp_index_1]/2.0 + stopper_list[possibilities[i][1]][tmp_index_2]/2.0;
-//      printf("SIDE 2 a - b distance %f %f\n", tmp_lhs, tmp_rhs);
-      if(tmp_lhs < (tmp_rhs + EPSILON)) {
+      if(tmp_lhs <= (tmp_rhs + EPSILON)) {
         continue;
       }
       tmp_index_1 = tmp_index_2 = 0;
-      if(possibilities[i][1] == 0) {tmp_index_1 = 1;}
-      else if(possibilities[i][2] == 0) {tmp_index_2 = 1;}
+      if(possibilities[i][1] == 0) tmp_index_1 = 1;
+      else if(possibilities[i][2] == 0) tmp_index_2 = 1;
       tmp_lhs = sqrt(pow(c.x - b.x,2.0) + pow(c.y - b.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][1]][tmp_index_1]/2.0 + stopper_list[possibilities[i][2]][tmp_index_2]/2.0;
-//      printf("SIDE 2 b - c distance %f %f\n", tmp_lhs, tmp_rhs);
-      if(tmp_lhs < (tmp_rhs + EPSILON)) {
+      if(tmp_lhs <= (tmp_rhs + EPSILON)) {
         continue;
       }
       tmp_index_1 = tmp_index_2 = 0;
-      if(possibilities[i][2] == 0) {tmp_index_1 = 1;}
-      else if(possibilities[i][0] == 0) {tmp_index_2 = 1;}
+      if(possibilities[i][2] == 0) tmp_index_1 = 1;
+      else if(possibilities[i][0] == 0) tmp_index_2 = 1;
       tmp_lhs = sqrt(pow(a.x - c.x,2.0) + pow(a.y - c.y,2.0));
       tmp_rhs = stopper_list[possibilities[i][2]][tmp_index_1]/2.0 + stopper_list[possibilities[i][0]][tmp_index_2]/2.0;
-//      printf("SIDE 2 c - a distance %f %f\n", tmp_lhs, tmp_rhs);
-      if(tmp_lhs < (tmp_rhs + EPSILON)) {
+      if(tmp_lhs <= (tmp_rhs + EPSILON)) {
         continue;
       }
       good = true;
       break;
+    }
     }
     printf("Triangle number %d:\n", count);
     count++;
