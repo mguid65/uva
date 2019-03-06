@@ -21,8 +21,8 @@ public:
 //generate the forest relative to a single tree and determine its obstacles
 class tree_relative_forest {
 public:
-  tree_relative_forest(const double &r1, const double &h1) : r1(r1), h1(h1), max_reach(sqrt((r1*r1)+(h1*h1))) {
-  }
+  tree_relative_forest(const double &r1, const double &h1) : r1(r1), h1(h1), max_reach(sqrt((r1*r1)+(h1*h1))) {}
+
   //add the angles for a fence only if it falls within the fall range of this tree
   void add_fence(double distance, double offset) {
     if(max_reach >= distance + EPSILON) {
