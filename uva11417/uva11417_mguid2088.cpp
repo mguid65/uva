@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cmath>
 #include <array>
+
 std::array<std::array<int, 502>, 502> cache {0};
 
 unsigned gcd(int u, int v) {
