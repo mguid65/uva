@@ -9,7 +9,6 @@ int main () {
   getc(stdin);
   while(n--) {
     std::getline(std::cin, line);
-    par = brace = 0;
     std::stack<char> balance_stack;
     for(char &c: line) {
       if (c == '(' || c == '[') {
