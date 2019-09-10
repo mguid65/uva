@@ -6,6 +6,5 @@ using std::cout;
 using std::cin;
 
 int main() {
-  string s;
-  while ( getline(cin, s) ) cout << s << '\n';
+  std::cout << std::cin.rdbuf();
 }
